@@ -5,6 +5,7 @@ from utils.sentiment_detection import read_tokens, load_reviews, print_binary_co
 from exercises.tick1 import accuracy, predict_sentiment, read_lexicon
 from exercises.tick2 import predict_sentiment_nbc, calculate_smoothed_log_probabilities, \
     calculate_class_log_probabilities
+from exercises.tick4 import sign_test
 
 
 def generate_random_cross_folds(training_data: List[Dict[str, Union[List[str], int]]], n: int = 10) \
@@ -75,6 +76,7 @@ def cross_validate_nbc(split_training_data: List[List[Dict[str, Union[List[str],
             [predict_sentiment_nbc(review["text"], log_probabilities, class_log_probabilities) for review in to_test],
             [review["sentiment"] for review in to_test]))
     return accuracies
+
 
 def cross_validate_tick_1(split_training_data: List[List[Dict[str, Union[List[str], int]]]]) -> List[float]:
     """
@@ -199,6 +201,7 @@ def main():
     print("Confusion matrix:")
     print_binary_confusion_matrix(confusion_matrix(preds_recent, recent_sentiments))
 
+    # Tick 1 Stats
     accuracies = cross_validate_tick_1(folds)
     print(f"Tick 1 stratified accuracies: {accuracies}")
     mean_accuracy = cross_validation_accuracy(accuracies)
@@ -207,13 +210,15 @@ def main():
     print(f"Tick 1 stratified accuracy variance: {variance}\n")
 
     lexicon = read_lexicon('data/sentiment_detection/sentiment_lexicon')
-    [predict_sentiment(data, lexicon) for data in recent_review_data], [x['sentiment'] for x in review_data]
-    accuracy_2016 = accuracy()
-    print(f"Tick 1 2016 accuracies: {accuracy_2016}")
-    mean_accuracy = cross_validation_accuracy(accuracy_2016)
-    print(f"Tick 1 2016 mean accuracy: {mean_accuracy}")
-    variance = cross_validation_variance(accuracy_2016)
-    print(f"Tick 1 2016 accuracy variance: {variance}\n")
+    pred, truth = [predict_sentiment(data, lexicon) for data in recent_review_data], [x['sentiment'] for x in
+                                                                                      recent_review_data]
+    accuracy_2016 = accuracy(pred, truth)
+    print(accuracy_2016)
+    print(truth)
+    print(pred)
+    print(preds_recent)
+    print(sign_test(truth, pred, preds_recent))
+
 
 if __name__ == '__main__':
     main()

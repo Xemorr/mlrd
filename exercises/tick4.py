@@ -86,6 +86,10 @@ def sign_test(actual_sentiments: List[int], classification_a: List[int], classif
     for i in range(k + 1):
         result += comb(n, i) * math.pow(q, i) * math.pow(1 - q, n - i)
     result *= 2
+    print(n)
+    print(k)
+    print(q)
+    print(result)
     return result  # p-value
 
 
